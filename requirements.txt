@@ -3,3 +3,4 @@ json
 chromadb
 sentence-transformers
 streamlit
+pymupdf

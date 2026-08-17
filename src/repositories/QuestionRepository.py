@@ -25,6 +25,15 @@ class QuestionRepository:
                 return questao
 
         return None
+    
+    def get_by_enunciado(self, enunciado):
+        questoes = self.get_all()
+
+        for questao in questoes:
+            if questao["enunciado"] == enunciado:
+                return questao
+
+        return None
 
     def add(self, questao):
         questoes = self.get_all()

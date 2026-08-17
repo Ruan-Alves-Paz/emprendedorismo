@@ -16,5 +16,6 @@ A correção das respostas é realizada com o auxílio de um modelo de linguagem
 Utilize o menu lateral para:
 - 📚 Cadastrar questões
 - 📝 Corrigir respostas
+- 📷 Correção por OCR (Imagem)
 - 📊 Visualizar histórico
 """)

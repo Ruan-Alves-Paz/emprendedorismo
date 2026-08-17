@@ -9,9 +9,11 @@ class QuestionService:
     def get_question(self, question_id):
         return self.repository.get_by_id(question_id)
 
+    def get_question_by_enunciado(self, enunciado):
+        return self.repository.get_by_enunciado(enunciado)
+
     def create_question(
         self,
-        disciplina_id,
         enunciado,
         resposta_modelo,
         criterios,
@@ -33,7 +35,6 @@ class QuestionService:
 
         questao = {
             "questao_id": novo_id,
-            "disciplina_id": disciplina_id,
             "enunciado": enunciado,
             "criterios": criterios,
             "resposta_modelo": resposta_modelo,

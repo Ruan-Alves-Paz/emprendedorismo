@@ -9,7 +9,6 @@ service = QuestionService(repository)
 
 st.title("Cadastro de Questões")
 
-disciplina = st.text_input("ID da Disciplina")
 
 enunciado = st.text_area(
     "Enunciado",
@@ -42,7 +41,6 @@ if st.button("Salvar"):
 
     service.create_question(
 
-        disciplina,
 
         enunciado,
 

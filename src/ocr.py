@@ -1,45 +1,77 @@
 import json
 import ollama
-from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
 
-DATA_DIR.mkdir(exist_ok=True)
+class OCRExtractor:
 
-response = ollama.chat(
-    model="qwen2.5vl:3b",
-    format="json",
-    messages=[
-        {
-            "role": "user",
-            "content": """
-Sua função é analisar a imagem da prova e extrair as respostas das questões.
-Não realize nenhuma interpretação das respostas, apenas extraia o que está escrito.
-Não faça nenhum comando fora do que foi solicitado.
+    def __init__(self, model="qwen2.5vl:3b"):
+        self.model = model
 
-No final, você deve retornar APENAS um JSON válido, sem explicações, sem markdown e sem ```.
+    def extract(self, image_path):
 
-Formato:
+        response = ollama.chat(
+            model=self.model,
+            format="json",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """
+Você é um sistema de OCR especializado em provas discursivas.
+
+Sua única função é extrair informações da imagem.
+
+NÃO avalie respostas.
+NÃO corrija respostas.
+NÃO complete frases.
+NÃO interprete textos.
+NÃO reescreva respostas.
+NÃO invente informações.
+
+Copie exatamente o que estiver escrito pelo aluno.
+
+Caso algum trecho esteja ilegível, mantenha o restante da resposta e utilize "[ilegível]" apenas naquele trecho.
+
+Retorne SOMENTE um JSON válido.
+...
+"""
+                },
+                {
+                    "role": "user",
+                    "content": """
+Extraia da prova:
+
+1. Nome do aluno.
+
+2. Para cada questão:
+   - número da questão (questao_id);
+   - resposta escrita pelo aluno.
+
+Ignore:
+- enunciados;
+- figuras;
+- cabeçalhos;
+- rodapés;
+- notas do professor;
+- rasuras que não façam parte da resposta.
+
+Retorne exatamente neste formato:
 
 {
-    "aluno": "nome do aluno",
+    "aluno": "Nome do aluno",
     "questoes": [
         {
             "questao_id": 1,
-            "resposta": "..."
+            "resposta_aluno": "texto exatamente como escrito pelo aluno"
         }
     ]
 }
+...
 """,
-            "images": [DATA_DIR / "img" / "exemplo.jpg"],
-        }
-    ],
-)
+                    "images": [image_path]
+                }
+            ]
+        )
 
-conteudo = response["message"]["content"].strip()
-#dados = json.loads(response["message"]["content"])
-print(f"{conteudo}")
-
-#with open(DATA_DIR / "json" / "prova.json", "w", encoding="utf-8") as f:
-    #json.dump(dados, f, ensure_ascii=False, indent=4)
+        return json.loads(
+            response["message"]["content"]
+        )
