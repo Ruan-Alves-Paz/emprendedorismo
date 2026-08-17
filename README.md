@@ -15,6 +15,7 @@ Ao contrário de um corretor baseado apenas em LLM, o sistema aprende gradualmen
 - Cadastro de disciplinas e questões.
 - Cadastro de resposta modelo.
 - Definição de critérios de avaliação para cada questão.
+- Extração de texto de imagens de provas via OCR (Qwen2.5-VL).
 - Correção automática utilizando LLM.
 - Recuperação de respostas semelhantes previamente corrigidas (RAG).
 - Correção manual pelo professor.
@@ -27,7 +28,7 @@ Ao contrário de um corretor baseado apenas em LLM, o sistema aprende gradualmen
 ## Arquitetura
 
 ```text
-Resposta do aluno
+Resposta do aluno (Texto / OCR da imagem)
         │
         ▼
 Busca da questão
@@ -62,6 +63,7 @@ Base vetorial atualizada
 - Streamlit
 - Ollama
 - Gemma
+- Qwen2.5-VL (OCR)
 - ChromaDB
 - JSON (persistência local)
 
@@ -74,7 +76,8 @@ emprendedorismo/
 
 ├── data/
 │   ├── questoes.json
-│   └── correcoes.json
+│   ├── correcoes.json
+│   └── prova.json
 │
 ├── src/
 │   ├── app.py
@@ -82,11 +85,13 @@ emprendedorismo/
 │   ├── database.py
 │   ├── retriever.py
 │   ├── evaluator.py
-│   ├── dependencies.py
+│   ├── ocr.py
+│   ├── dependecies.py
 │   │
 │   ├── pages/
-│   │   ├── cadastro.py
+│   │   ├── questoes.py
 │   │   ├── correcao.py
+│   │   ├── upload_prova.py
 │   │   └── historico.py
 │   │
 │   ├── repositories/
@@ -112,7 +117,7 @@ Cada questão possui:
 
 ### 2. Correção
 
-Ao receber uma resposta do aluno, o sistema:
+Ao receber uma resposta do aluno (digitada ou extraída via OCR), o sistema:
 
 1. Recupera a questão correspondente.
 2. Busca respostas semanticamente semelhantes no ChromaDB.
@@ -180,13 +185,14 @@ cd emprendedorismo
 pip install -r requirements.txt
 ```
 
-### Instale o modelo no Ollama
+### Instale os modelos no Ollama
 
 ```bash
 ollama pull gemma4
+ollama pull qwen2.5vl:3b
 ```
 
-> Substitua `gemma4` pelo modelo desejado, caso utilize outro.
+> Substitua `gemma4` ou `qwen2.5vl:3b` pelos modelos desejados, caso utilize outros.
 
 ### Execute a aplicação
 
