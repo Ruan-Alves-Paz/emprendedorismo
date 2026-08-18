@@ -33,15 +33,15 @@ st.divider()
 
 st.subheader("📖 Como Usar o Aplicativo (Guia Passo a Passo)")
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "1️⃣ Cadastrar Questões",
     "2️⃣ Criar Prova (JSON)",
-    "3️⃣ Correção por Texto",
-    "4️⃣ Correção por OCR (Imagem)",
-    "5️⃣ Aprendizado Contínuo (RAG)",
-    "6️⃣ Histórico"
+    "3️⃣ Correção Individual",
+    "4️⃣ Correção de Prova OCR",
+    "5️⃣ Correção em Lote (Turmas)",
+    "6️⃣ Aprendizado Contínuo (RAG)",
+    "7️⃣ Histórico"
 ])
-
 
 with tab1:
     st.markdown("""
@@ -77,31 +77,39 @@ with tab3:
     2. Selecione a questão cadastrada no menu suspenso.
     3. Cole ou digite a **Resposta do Aluno** na caixa de texto.
     4. Clique no botão **Corrigir**.
-    5. O sistema exibirá a análise da IA:
-       - **Nota sugerida** e **Nível de Confiança** da avaliação.
-       - **Justificativa pedagógica** detalhada com base nos critérios.
-       - **Respostas similares históricas** encontradas no banco (RAG) para comparação.
-    6. **Revisão Final:** Você pode ajustar a nota ou editar o feedback se desejar, e depois clicar em **Salvar correção**.
+    5. O sistema exibirá a análise da IA (nota sugerida, justificativa e precedentes RAG).
+    6. **Revisão Final:** Ajuste a nota se desejar e clique em **Salvar correção**.
     """)
 
 with tab4:
     st.markdown("""
     ### 📷 Passo 3B: Correção de Prova por Imagem (OCR)
-    Recomendado para provas físicas manuscritas ou impressas digitalizadas por foto.
+    Recomendado para a prova de um único aluno enviada por foto.
     
     1. Acesse a página **`Correção de Prova por Imagem (OCR)`** (`upload_prova`) no menu lateral.
-    2. Faça o upload da imagem da prova (`.png`, `.jpg`, `.jpeg`).
-    3. Clique em **🔍 Extrair Texto (OCR)**.
-    4. **Revisão Humana (Human-in-the-Loop):**
-       - Verifique o nome do aluno identificado pela IA.
-       - Confira as respostas extraídas para cada questão e corrija eventuais erros de leitura do OCR.
-    5. Clique em **🤖 Avaliar Prova com IA**.
-    6. Analise a nota geral, as justificativas e as sugestões da IA por questão.
-    7. Ajuste as notas finais e feedbacks se necessário.
-    8. Clique em **💾 Salvar Correções no Histórico e RAG** para salvar o resultado da prova inteira.
+    2. Selecione a Prova Modelo e faça o upload da foto (`.png`, `.jpg`, `.jpeg`).
+    3. Clique em **🔍 Extrair Texto (OCR)** e revise os textos lidos.
+    4. Clique em **🤖 Avaliar Prova com IA**.
+    5. Ajuste as notas finais e clique em **💾 Salvar Correções no Histórico e RAG**.
     """)
 
 with tab5:
+    st.markdown("""
+    ### 👥 Passo 3C: Correção em Lote de Provas (Vários Alunos)
+    Recomendado para corrigir provas de uma turma inteira de uma só vez!
+    
+    1. Acesse a página **`Correção em Lote`** (`correcao_lote`) no menu lateral.
+    2. Selecione a **Prova Modelo** referente à avaliação da turma.
+    3. Escolha a forma de envio:
+       - 📷 **Múltiplas Fotos (Batch OCR)**: Selecione as fotos de todos os alunos da turma.
+       - 📄 **Upload JSON da Turma**: Selecione o arquivo `.json` com a lista de respostas.
+    4. Clique em **🤖 Processar OCR e Avaliar Provas da Turma**.
+    5. Acompanhe o progresso em tempo real e consulte o **Painel Geral da Turma** (média, maior/menor nota, tabela resumo).
+    6. Revise ou edite individualmente as respostas de qualquer aluno.
+    7. Clique em **💾 Salvar TODAS as Correções no Histórico e RAG** ou baixe a **Planilha CSV de Notas**.
+    """)
+
+with tab6:
     st.markdown("""
     ### 🧠 Como Funciona o Aprendizado Contínuo (RAG)?
     O sistema utiliza a tecnologia **RAG (Retrieval-Augmented Generation)** com busca por similaridade vetorial:
@@ -112,7 +120,7 @@ with tab5:
     - Quanto mais você utiliza e confirma correções, mais o sistema se adapta aos critérios de avaliação da sua instituição!
     """)
 
-with tab6:
+with tab7:
     st.markdown("""
     ### 📊 Passo 4: Consultar o Histórico de Correções
     
@@ -120,6 +128,7 @@ with tab6:
     2. Consulte a lista de todas as correções efetuadas até o momento.
     3. Acompanhe os registros de notas, respostas e feedbacks concedidos.
     """)
+
 
 
 st.divider()
