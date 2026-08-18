@@ -39,6 +39,8 @@ class CorrectionRepository:
         ]
 
     def add(self, correcao):
+        if not correcao.get("aluno") or not str(correcao["aluno"]).strip():
+            raise ValueError("O nome do aluno é obrigatório para registrar a correção.")
 
         correcoes = self.get_all()
 

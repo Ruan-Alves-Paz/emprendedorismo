@@ -29,6 +29,10 @@ selected = st.selectbox(
     list(options.keys())
 )
 
+aluno = st.text_input(
+    "Nome do aluno"
+)
+
 resposta = st.text_area(
     "Resposta do aluno"
 )
@@ -38,6 +42,10 @@ resposta = st.text_area(
 # ======================================================
 
 if st.button("Corrigir", use_container_width=True):
+
+    if not aluno.strip():
+        st.warning("Digite o nome do aluno.")
+        st.stop()
 
     if not resposta.strip():
         st.warning("Digite a resposta do aluno.")
@@ -61,6 +69,7 @@ if st.button("Corrigir", use_container_width=True):
 
     st.session_state["correcao"] = {
         "questao_id": question["questao_id"],
+        "aluno": aluno.strip(),
         "resposta": resposta,
         "resultado": resultado
     }
@@ -76,16 +85,17 @@ correcao = st.session_state.get("correcao")
 if correcao:
 
     resultado = correcao["resultado"]
+    aluno_nome = correcao.get("aluno", "Aluno Não Identificado")
 
     st.divider()
 
-    st.subheader("Avaliação da IA")
+    st.subheader(f"Avaliação da IA - Aluno(a): {aluno_nome}")
 
     col1, col2 = st.columns(2)
 
     with col1:
         st.metric(
-            "Nota sugerida",
+            "Pontuação",
             resultado["nota"]
         )
 
@@ -124,8 +134,7 @@ if correcao:
             key=lambda x: x["distancia"]
         )
 
-
-        if len(exemplos) > 1:
+        if len(exemplos) > 0:
 
             with st.expander(
                 "Respostas semelhantes"
@@ -134,6 +143,10 @@ if correcao:
                 for exemplo in exemplos:
 
                     st.markdown("---")
+
+                    st.write(
+                        f"**Aluno:** {exemplo.get('aluno', 'Desconhecido')}"
+                    )
 
                     st.write(
                         "**Resposta**"
@@ -178,7 +191,7 @@ if correcao:
     )
 
     nota = st.number_input(
-        "Nota final",
+        "Pontuação",
         min_value=0.0,
         max_value=10.0,
         value=float(resultado["nota"]),
@@ -190,64 +203,27 @@ if correcao:
         value=resultado["justificativa"]
     )
 
-    col1, col2 = st.columns(2)
-
     # ==============================================
-    # Aceitar IA
+    # Salvar Correção (Manual)
     # ==============================================
 
-    with col1:
+    if st.button(
+        "💾 Salvar Correção",
+        use_container_width=True
+    ):
 
-        if st.button(
-            "Salvar como correção automática",
-            use_container_width=True
-        ):
+        correction_service.save_manual_correction(
+            correcao["questao_id"],
+            correcao["resposta"],
+            nota,
+            feedback,
+            aluno_nome
+        )
 
-            correction_service.save_automatic_correction(
+        del st.session_state["correcao"]
 
-                correcao["questao_id"],
+        st.success(
+            "Correção salva com sucesso!"
+        )
 
-                correcao["resposta"],
-
-                resultado
-
-            )
-
-            del st.session_state["correcao"]
-
-            st.success(
-                "Correção salva!"
-            )
-
-            st.rerun()
-
-    # ==============================================
-    # Correção manual
-    # ==============================================
-
-    with col2:
-
-        if st.button(
-            "Salvar correção",
-            use_container_width=True
-        ):
-
-            correction_service.save_manual_correction(
-
-                correcao["questao_id"],
-
-                correcao["resposta"],
-
-                nota,
-
-                feedback
-
-            )
-
-            del st.session_state["correcao"]
-
-            st.success(
-                "Correção salva!"
-            )
-
-            st.rerun()
+        st.rerun()

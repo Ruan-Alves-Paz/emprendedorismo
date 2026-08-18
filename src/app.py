@@ -33,13 +33,15 @@ st.divider()
 
 st.subheader("📖 Como Usar o Aplicativo (Guia Passo a Passo)")
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "1️⃣ Cadastrar Questões",
-    "2️⃣ Correção por Texto",
-    "3️⃣ Correção por OCR (Imagem)",
-    "4️⃣ Aprendizado Contínuo (RAG)",
-    "5️⃣ Histórico"
+    "2️⃣ Criar Prova (JSON)",
+    "3️⃣ Correção por Texto",
+    "4️⃣ Correção por OCR (Imagem)",
+    "5️⃣ Aprendizado Contínuo (RAG)",
+    "6️⃣ Histórico"
 ])
+
 
 with tab1:
     st.markdown("""
@@ -55,7 +57,20 @@ with tab1:
 
 with tab2:
     st.markdown("""
-    ### 📝 Passo 2A: Correção Individual por Texto
+    ### 📝 Passo 2: Montar e Exportar Prova (JSON)
+    Crie provas personalizadas selecionando questões do repositório cadastrado.
+    
+    1. Acesse a página **`Criador de Provas`** (`criar_prova`) no menu lateral.
+    2. Informe o **Título da Prova** e a **Disciplina**.
+    3. Selecione as questões desejadas na lista suspensa.
+    4. Ajuste a nota máxima de cada questão se necessário.
+    5. Clique em **💾 Salvar Prova no Sistema** para guardar a estrutura em `provas_modelo.json`.
+    6. Clique em **⬇️ Baixar JSON da Prova** para exportar o arquivo `.json` gerado.
+    """)
+
+with tab3:
+    st.markdown("""
+    ### 📝 Passo 3A: Correção Individual por Texto
     Recomendado para respostas digitadas diretamente pelos alunos ou copiadas de formulários digitais.
     
     1. Acesse a página **`Correção de Questões`** (`correcao`) no menu lateral.
@@ -69,9 +84,9 @@ with tab2:
     6. **Revisão Final:** Você pode ajustar a nota ou editar o feedback se desejar, e depois clicar em **Salvar correção**.
     """)
 
-with tab3:
+with tab4:
     st.markdown("""
-    ### 📷 Passo 2B: Correção de Prova por Imagem (OCR)
+    ### 📷 Passo 3B: Correção de Prova por Imagem (OCR)
     Recomendado para provas físicas manuscritas ou impressas digitalizadas por foto.
     
     1. Acesse a página **`Correção de Prova por Imagem (OCR)`** (`upload_prova`) no menu lateral.
@@ -86,7 +101,7 @@ with tab3:
     8. Clique em **💾 Salvar Correções no Histórico e RAG** para salvar o resultado da prova inteira.
     """)
 
-with tab4:
+with tab5:
     st.markdown("""
     ### 🧠 Como Funciona o Aprendizado Contínuo (RAG)?
     O sistema utiliza a tecnologia **RAG (Retrieval-Augmented Generation)** com busca por similaridade vetorial:
@@ -97,14 +112,15 @@ with tab4:
     - Quanto mais você utiliza e confirma correções, mais o sistema se adapta aos critérios de avaliação da sua instituição!
     """)
 
-with tab5:
+with tab6:
     st.markdown("""
-    ### 📊 Passo 3: Consultar o Histórico de Correções
+    ### 📊 Passo 4: Consultar o Histórico de Correções
     
     1. Acesse a página **`Histórico`** (`historico`) no menu lateral.
     2. Consulte a lista de todas as correções efetuadas até o momento.
     3. Acompanhe os registros de notas, respostas e feedbacks concedidos.
     """)
+
 
 st.divider()
 
@@ -117,4 +133,4 @@ st.info("""
 """)
 
 st.sidebar.markdown("---")
-st.sidebar.info("👈 Utilize o menu lateral acima para navegar entre as seções do aplicativo.")
+st.sidebar.info("👈 Utilize o menu lateral acima para navegar entre as seções do aplicativo.")

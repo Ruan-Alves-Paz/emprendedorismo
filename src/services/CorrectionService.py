@@ -29,6 +29,7 @@ class CorrectionService:
             questao["resposta_modelo"],
             resposta_aluno,
             questao["criterios"],
+            questao.get("nota_maxima", 10),
             exemplos
         )
         
@@ -36,10 +37,13 @@ class CorrectionService:
 
         return resultado
     
-    def save_manual_correction(self, questao_id, resposta_aluno, nota, feedback):
+    def save_manual_correction(self, questao_id, resposta_aluno, nota, feedback, aluno):
+        if not aluno or not str(aluno).strip():
+            raise ValueError("O nome do aluno é obrigatório para salvar a correção.")
 
         correcao = {
             "questao_id": questao_id,
+            "aluno": aluno.strip(),
             "resposta_aluno": resposta_aluno,
             "nota": nota,
             "feedback": feedback,
@@ -54,19 +58,34 @@ class CorrectionService:
             questao_id=questao_id,
             resposta=resposta_aluno,
             nota=nota,
-            feedback=feedback
+            feedback=feedback,
+            aluno=aluno.strip()
         )
 
-        
-    def save_automatic_correction(self, questao_id, resposta_aluno, resultado):
+    def save_automatic_correction(self, questao_id, resposta_aluno, resultado, aluno):
+        if not aluno or not str(aluno).strip():
+            raise ValueError("O nome do aluno é obrigatório para salvar a correção.")
 
         correcao = {
             "questao_id": questao_id,
+            "aluno": aluno.strip(),
             "resposta_aluno": resposta_aluno,
             "nota": resultado["nota"],
             "feedback": resultado["justificativa"],
-            "origem": "automatica",
+            "origem": "automatica"
         }
 
+        # Salva no histórico
         self.correction_repository.add(correcao)
+
+        # Adiciona ao banco vetorial
+        self.retriever.add(
+            questao_id=questao_id,
+            resposta=resposta_aluno,
+            nota=resultado["nota"],
+            feedback=resultado["justificativa"],
+            aluno=aluno.strip()
+        )
+
+        
         

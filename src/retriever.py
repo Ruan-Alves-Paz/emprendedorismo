@@ -10,23 +10,24 @@ class Retriever:
         questao_id,
         resposta,
         nota,
-        feedback
+        feedback,
+        aluno="Desconhecido"
     ):
 
         embedding = generate_embedding(resposta)
 
+        metadata = {
+            "questao_id": questao_id,
+            "nota": nota,
+            "feedback": feedback,
+            "aluno": aluno or "Desconhecido"
+        }
+
         collection.add(
             ids=[str(uuid.uuid4())],
-
             embeddings=[embedding],
-
             documents=[resposta],
-
-            metadatas=[{
-                "questao_id": questao_id,
-                "nota": nota,
-                "feedback": feedback
-            }]
+            metadatas=[metadata]
         )
 
     def search(
@@ -40,7 +41,6 @@ class Retriever:
             resposta_aluno
         )
 
-
         resultado = collection.query(
             query_embeddings=[
                 embedding
@@ -53,32 +53,20 @@ class Retriever:
             }
         )
 
-
         exemplos = []
-
 
         for i in range(
             len(resultado["documents"][0])
         ):
 
+            meta = resultado["metadatas"][0][i]
             exemplos.append({
-
-                "resposta":
-                resultado["documents"][0][i],
-
-                "nota":
-                resultado["metadatas"][0][i]["nota"],
-
-                "feedback":
-                resultado["metadatas"][0][i]["feedback"],
-
-                "distancia":
-                resultado["distances"][0][i],
-                
-                "similaridade":
-                1 - resultado["distances"][0][i]
-                
+                "resposta": resultado["documents"][0][i],
+                "nota": meta.get("nota"),
+                "feedback": meta.get("feedback"),
+                "aluno": meta.get("aluno", "Desconhecido"),
+                "distancia": resultado["distances"][0][i],
+                "similaridade": 1 - resultado["distances"][0][i]
             })
-
 
         return exemplos

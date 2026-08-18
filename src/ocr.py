@@ -7,7 +7,17 @@ class OCRExtractor:
     def __init__(self, model="qwen2.5vl:3b"):
         self.model = model
 
-    def extract(self, image_path):
+    def extract(self, image_path, prova_modelo=None):
+        prompt_questoes = ""
+        if prova_modelo and "questoes" in prova_modelo:
+            prompt_questoes = "\n\nEsta imagem é uma prova referente ao modelo:\n"
+            prompt_questoes += f"Título: {prova_modelo.get('titulo', 'Sem Título')}\n"
+            prompt_questoes += f"Disciplina: {prova_modelo.get('disciplina', 'Geral')}\n"
+            prompt_questoes += "Questões contidas nesta prova:\n"
+            for q in prova_modelo["questoes"]:
+                q_num = q.get("numero", q.get("questao_id"))
+                q_id = q.get("questao_id")
+                prompt_questoes += f"- Questão {q_num} (questao_id: {q_id}): Enunciado: '{q.get('enunciado')}'\n"
 
         response = ollama.chat(
             model=self.model,
@@ -32,19 +42,19 @@ Copie exatamente o que estiver escrito pelo aluno.
 Caso algum trecho esteja ilegível, mantenha o restante da resposta e utilize "[ilegível]" apenas naquele trecho.
 
 Retorne SOMENTE um JSON válido.
-...
 """
                 },
                 {
                     "role": "user",
-                    "content": """
+                    "content": f"""
 Extraia da prova:
 
 1. Nome do aluno.
 
-2. Para cada questão:
-   - número da questão (questao_id);
+2. Para cada questão presente na imagem:
+   - identificador/número da questão (questao_id);
    - resposta escrita pelo aluno.
+{prompt_questoes}
 
 Ignore:
 - enunciados;
@@ -54,18 +64,17 @@ Ignore:
 - notas do professor;
 - rasuras que não façam parte da resposta.
 
-Retorne exatamente neste formato:
+Retorne exatamente neste formato JSON:
 
-{
+{{
     "aluno": "Nome do aluno",
     "questoes": [
-        {
+        {{
             "questao_id": 1,
             "resposta_aluno": "texto exatamente como escrito pelo aluno"
-        }
+        }}
     ]
-}
-...
+}}
 """,
                     "images": [image_path]
                 }
@@ -74,4 +83,4 @@ Retorne exatamente neste formato:
 
         return json.loads(
             response["message"]["content"]
-        )
+        )
