@@ -228,7 +228,7 @@ if correcao:
     with col2:
 
         if st.button(
-            "Salvar como correção manual",
+            "Salvar correção",
             use_container_width=True
         ):
 
